@@ -2,12 +2,12 @@ import GetToken from "../config/token.js";
 import Users from "../models/user.db.js";
 import bcrypt from 'bcryptjs';
 
- export const signUp= async ()=>{
+ export const signUp= async (req,res)=>{
     try {
-        const {userName, email , password}= req.body;
-        const userExist = await Users.findOne({userName});
+        const {username, email , password}= req.body;
+        const userExist = await Users.findOne({username});
         if(userExist){
-            return resizeBy.status(400).json({
+            return res.status(400).json({
                 message:"User already exist"
             });
         }
@@ -27,10 +27,10 @@ import bcrypt from 'bcryptjs';
             });
         }
 
-        const hashedPass= bcrypt.hash(password,10);
+        const hashedPass= await bcrypt.hash(password,10);
 
         const newUser = await Users.create({
-            userName, email, password:hashedPass,
+            username, email, password:hashedPass,
         });
         
         const token = await GetToken(newUser._id);
@@ -42,7 +42,7 @@ import bcrypt from 'bcryptjs';
             secure:false
         });
 
-        return res.status(201).josn({
+        return res.status(201).json({
             newUser
         });
 
