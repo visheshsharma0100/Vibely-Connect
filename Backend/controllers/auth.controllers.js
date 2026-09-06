@@ -1,3 +1,4 @@
+import GetToken from "../config/token.js";
 import Users from "../models/user.db.js";
 import bcrypt from 'bcryptjs';
 
@@ -28,18 +29,26 @@ import bcrypt from 'bcryptjs';
 
         const hashedPass= bcrypt.hash(password,10);
 
-        const newUser = new Users({
+        const newUser = await Users.create({
             userName, email, password:hashedPass,
         });
         
-        await newUser.save();
-
-        return res.status(200).josn({
-            message:"New user created successfully",
-        })
+        const token = await GetToken(newUser._id);
         
+        res.cookie("token",token,{
+            httpOnly:true,
+            maxAge:7*24*60*60*1000,
+            sameSite:"None",
+            secure:false
+        });
+
+        return res.status(201).josn({
+            newUser
+        });
+
     } catch (error) {
-        
+        return res.status(500).json({
+            message:error.message
+        })
     }
-
 }
