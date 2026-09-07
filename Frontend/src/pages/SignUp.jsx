@@ -1,7 +1,12 @@
 import React from "react";
-
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from "lucide-react";
 
 const SignUp = () => {
+
+    let navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
     return (
         <div className="flex min-h-screen bg-[#eeeeff]">
             {/* Left side */}
@@ -45,14 +50,24 @@ const SignUp = () => {
                 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
                             />
                         </div>
-                        <div>
+
+                        {/* password */}
+                        <div className="relative">
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Password"
-                                className="w-full rounded-xl border border-[#dddaf5] bg-white px-5 py-4
-                text-gray-700 outline-none transition
-                focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                                className="w-full rounded-xl border border-[#dddaf5] bg-white px-5 py-4 pr-12
+        text-gray-700 outline-none transition
+        focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
                             />
+
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-purple-500"
+                            >
+                                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                            </button>
                         </div>
 
                         <button
@@ -70,7 +85,7 @@ const SignUp = () => {
                     {/* Login */}
                     <p className="mt-8 text-center text-gray-400">
                         Already have an account?{" "}
-                        <span className="cursor-pointer font-semibold text-[#6743ed]">
+                        <span onClick={() => { navigate("/login") }} className="cursor-pointer font-semibold text-[#6743ed]">
                             Log in
                         </span>
                     </p>
