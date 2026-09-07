@@ -2,6 +2,8 @@ import GetToken from "../config/token.js";
 import Users from "../models/user.db.js";
 import bcrypt from 'bcryptjs';
 
+
+// SignUp route
 export const signUp = async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -43,7 +45,7 @@ export const signUp = async (req, res) => {
         });
 
         return res.status(201).json({
-            message:"SignUp successfully"
+            message: "SignUp successfully"
         });
 
     } catch (error) {
@@ -52,6 +54,8 @@ export const signUp = async (req, res) => {
         })
     }
 }
+
+// Login Route
 export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -79,13 +83,28 @@ export const Login = async (req, res) => {
         });
 
         return res.status(201).json({
-            message:"Login Successfully"
+            message: "Login Successfully"
         });
 
     } catch (error) {
         return res.status(500).json({
             message: error.message
         });
+    }
+}
+
+// Logout route
+export const LogOut = async  (req,res)=>{
+    try{
+        res.clearCookie("token");
+        return res.status(200).json({
+            message:"Logout successfully"
+        });
+    }
+    catch(error){
+        return res.status(500).json({
+            message: error.message
+        })
     }
 }
 
