@@ -2,11 +2,39 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from "lucide-react";
+import axios from 'axios';
+import { serverURL } from "../main";
 
 const SignUp = () => {
 
     let navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    let [username, setUsername] = useState("");
+    let [email, setEmail] = useState("");
+    let [password, setPassword] = useState("");
+    let [loading, setLoading] = useState(false);
+    let [err, setError] = useState("");
+
+    const handleSignup = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            let result = await axios.post(`${serverURL}/api/auth/signup`, {
+                username, email, password
+            }, { withCredentials: true });
+            console.log(result);
+            setUsername("");
+            setEmail("");
+            setPassword("");
+            setLoading(false);
+            setError("");
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+            setError(error.response?.data?.message || "Something went wrong");
+        }
+    }
+
     return (
         <div className="flex min-h-screen bg-[#eeeeff]">
             {/* Left side */}
@@ -31,35 +59,35 @@ const SignUp = () => {
                     </p>
 
                     {/* Form */}
-                    <form className="mt-8 space-y-4">
+                    <form onSubmit={handleSignup} className="mt-8 space-y-4">
                         <div className="relative">
-                            <input
+                            <input onChange={(e) => setUsername(e.target.value)}
                                 type="text"
                                 placeholder="Username"
                                 className="w-full rounded-xl border border-[#dddaf5] bg-white px-5 py-4
                 text-gray-700 outline-none transition
                 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
-                            />
+                                value={username} />
                         </div>
                         <div>
-                            <input
+                            <input onChange={(e) => setEmail(e.target.value)}
                                 type="email"
                                 placeholder="Email address"
                                 className="w-full rounded-xl border border-[#dddaf5] bg-white px-5 py-4
                 text-gray-700 outline-none transition
                 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
-                            />
+                                value={email} />
                         </div>
 
                         {/* password */}
                         <div className="relative">
-                            <input
+                            <input onChange={(e) => setPassword(e.target.value)}
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Password"
                                 className="w-full rounded-xl border border-[#dddaf5] bg-white px-5 py-4 pr-12
         text-gray-700 outline-none transition
         focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
-                            />
+                                value={password} />
 
                             <button
                                 type="button"
@@ -70,6 +98,13 @@ const SignUp = () => {
                             </button>
                         </div>
 
+                        {/* show error  */}
+                        {err && (
+                            <p className="mt-2 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-500">
+                                {err}
+                            </p>
+                        )}
+
                         <button
                             type="submit"
                             className="mt-2 w-full rounded-xl bg-gradient-to-r
@@ -77,7 +112,7 @@ const SignUp = () => {
               text-lg font-semibold text-white shadow-lg
               shadow-purple-200 transition hover:scale-[1.01] hover:shadow-xl"
                         >
-                            Sign Up
+                            {loading ? "Loading..." : "Sign Up"}
                         </button>
 
                     </form>

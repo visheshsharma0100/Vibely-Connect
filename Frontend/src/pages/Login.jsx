@@ -2,12 +2,38 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
+import { serverURL } from "../main";
 
 const Login = () => {
 
   let navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  let [email, setEmail] = useState("");
+  let [password, setPassword] = useState("");
+  let [loading, setLoading] = useState(false);
+  let [err, setError] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      let result = await axios.post(`${serverURL}/api/auth/login`, {
+        email, password
+      }, { withCredentials: true });
+      console.log(result);
+      setEmail("");
+      setPassword("");
+      setLoading(false);
+      setError("");
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      setError(error.response?.data?.message || "Something went wrong");
+    }
+  }
+
 
   return (
     <div className="flex min-h-screen bg-[#eeeeff]">
@@ -36,29 +62,29 @@ const Login = () => {
           </p>
 
           {/* Form */}
-          <form className="mt-8 space-y-4">
+          <form className="mt-8 space-y-4" onSubmit={handleLogin}>
 
             {/* Email */}
             <div>
-              <input
+              <input onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 placeholder="Email address"
                 className="w-full rounded-xl border border-[#dddaf5] bg-white px-5 py-4
                                 text-gray-700 outline-none transition
                                 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
-              />
+                value={email} />
             </div>
 
             {/* Password */}
             <div className="relative">
 
-              <input
+              <input onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 className="w-full rounded-xl border border-[#dddaf5] bg-white px-5 py-4 pr-12
                                 text-gray-700 outline-none transition
                                 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
-              />
+                value={password} />
 
               <button
                 type="button"
@@ -71,8 +97,13 @@ const Login = () => {
                   : <EyeOff size={20} />
                 }
               </button>
-
             </div>
+
+            {err && (
+              <p className="mt-2 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-500">
+                {err}
+              </p>
+            )}
 
             {/* Login Button */}
             <button
@@ -83,7 +114,7 @@ const Login = () => {
                             shadow-purple-200 transition
                             hover:scale-[1.01] hover:shadow-xl"
             >
-              Log In
+              {loading ? "Loading.." : "Log in"}
             </button>
 
           </form>
